@@ -1,0 +1,4 @@
+rootProject.name='CashfreeSDK'
+include ':app'
+include ':cashfree-payment'
+include ':cashfree-google'
