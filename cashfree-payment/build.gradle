@@ -1,4 +1,3 @@
-apply plugin: 'com.aaron.gradle.bintray-release'
 apply plugin: 'com.android.library'
 
 def config = rootProject.ext.android // 配置
@@ -45,6 +44,23 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.aar'])
 }
 
+android.libraryVariants.all { variant ->
+
+    tasks.findByPath("bundleReleaseAar").doLast {
+        copy {
+            def buildType = variant.buildType.name
+            def destPath = file("${buildDir}/outputs/aar/")
+            from "${projectDir}/release/cashfreesdk-1.4-release.aar"
+            into destPath
+            rename { String fileName ->
+                fileName.replace("cashfreesdk-1.4-release.aar", "cashfree-payment-${buildType}.aar")
+            }
+            System.err.println("copy aar file cashfreesdk-1.4-release.aar success in dir ${destPath}！")
+        }
+    }
+
+}
+
 // Bintray
 apply from: '../gradle/bintray.gradle'
 
@@ -61,7 +77,5 @@ publish {
     artifactId = 'cashfree-payment'
     uploadName = 'Cashfree-Payment'
     publishVersion = '1.4'
-    archivesPath = '../release'
-    archivesName = 'cashfree-payment'
     desc = 'Cashfree Payment Gateway for Android SDK.'
 }

@@ -1,4 +1,3 @@
-apply plugin: 'com.aaron.gradle.bintray-release'
 apply plugin: 'com.android.library'
 
 def config = rootProject.ext.android // 配置
@@ -39,6 +38,22 @@ dependencies {
     implementation 'com.google.android.gms:play-services-tasks:17.0.2'
 }
 
+android.libraryVariants.all { variant ->
+
+    tasks.findByPath("bundleReleaseAar").doLast {
+        copy {
+            def buildType = variant.buildType.name
+            def destPath = file("${buildDir}/outputs/aar/")
+            from "${projectDir}/release/google-pay-client-api-1.0.0.aar"
+            into destPath
+            rename { String fileName ->
+                fileName.replace("google-pay-client-api-1.0.0.aar", "cashfree-google-${buildType}.aar")
+            }
+            System.err.println("copy aar file cashfreesdk-1.4-release.aar success in dir ${destPath}！")
+        }
+    }
+
+}
 
 // Bintray
 apply from: '../gradle/bintray.gradle'
